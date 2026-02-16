@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sacha FX | Sovereign V35</title>
+    <title>Sacha FX | Sovereign V36</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -36,10 +36,10 @@
 
     <div id="auth-overlay" class="fixed inset-0 bg-[#020202] z-[600] flex items-center justify-center">
         <div class="glass p-10 rounded-[2.5rem] w-full max-w-sm text-center border-white/10 shadow-2xl">
-            <h2 class="text-2xl font-black uppercase mb-8 leading-none tracking-tighter">Sentinel <span class="neon-blue">Cloud</span></h2>
+            <h2 class="text-2xl font-black uppercase mb-8 leading-none tracking-tighter text-white">Sentinel <span class="neon-blue">Cloud</span></h2>
             <input type="email" id="auth-email" placeholder="Email" class="w-full p-4 rounded-xl mb-3">
             <input type="password" id="auth-pass" placeholder="Password" class="w-full p-4 rounded-xl mb-6">
-            <button onclick="handleAuth('login')" class="w-full bg-blue-600 py-4 rounded-xl font-black uppercase text-xs tracking-widest">Login / Sync</button>
+            <button onclick="handleAuth()" class="w-full bg-blue-600 py-4 rounded-xl font-black uppercase text-xs hover:bg-blue-500 transition">Login</button>
             <p id="auth-msg" class="mt-6 text-[10px] text-red-500 uppercase italic font-bold"></p>
         </div>
     </div>
@@ -51,34 +51,35 @@
                 <h2 class="text-2xl font-black uppercase tracking-tighter italic">Trade <span class="neon-blue">Architecture</span></h2>
                 <button onclick="deleteActiveTrade()" id="del-trade-btn" class="hidden text-[10px] font-black text-red-500/50 hover:text-red-500 uppercase tracking-widest px-4 py-2 border border-red-500/20 rounded-xl transition-all">Delete Trade</button>
             </div>
+            
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
                 <div class="space-y-4">
-                    <h3 class="text-[9px] font-black uppercase text-blue-500 tracking-widest">Specs</h3>
+                    <h3 class="text-[9px] font-black uppercase text-blue-500 tracking-widest">Execution Specs</h3>
                     <input type="date" id="jou-date" class="w-full p-3 rounded-xl text-xs">
                     <input type="time" id="jou-time" class="w-full p-3 rounded-xl text-xs">
                     <select id="jou-dir" class="w-full p-3 rounded-xl text-xs"><option>LONG</option><option>SHORT</option></select>
                     <select id="jou-plan" class="w-full p-3 rounded-xl text-xs"><option value="YES">PLAN OK</option><option value="NO">PLAN FAIL</option></select>
                     <div class="grid grid-cols-2 gap-2">
-                        <input type="number" id="jou-rr" step="0.1" class="w-full p-3 rounded-xl text-xs" placeholder="RR Real">
+                        <input type="number" id="jou-rr" step="0.1" class="w-full p-3 rounded-xl text-xs" placeholder="Realized RR">
                         <input type="number" id="jou-rr-max" step="0.1" class="w-full p-3 rounded-xl text-xs" placeholder="RR Max">
                     </div>
                     <select id="jou-outcome" class="w-full p-3 rounded-xl text-xs font-black"><option value="WIN">WIN</option><option value="LOSS">LOSS</option><option value="BE">BE</option></select>
                 </div>
                 <div class="space-y-4">
-                    <h3 class="text-[9px] font-black uppercase text-purple-500 tracking-widest">Charts</h3>
+                    <h3 class="text-[9px] font-black uppercase text-purple-500 tracking-widest">Evidence URLS</h3>
                     <input type="text" id="jou-h1" class="w-full p-3 rounded-xl text-xs" placeholder="H1 Chart URL">
                     <input type="text" id="jou-m15" class="w-full p-3 rounded-xl text-xs" placeholder="M15 Chart URL">
                     <input type="text" id="jou-m1" class="w-full p-3 rounded-xl text-xs" placeholder="M1 Entry URL">
-                    <textarea id="jou-notes" rows="3" class="w-full p-4 rounded-xl text-xs" placeholder="Psychology..."></textarea>
+                    <textarea id="jou-notes" rows="3" class="w-full p-4 rounded-xl text-xs" placeholder="Psychology/Notes..."></textarea>
                 </div>
                 <div class="space-y-4">
                     <h3 class="text-[9px] font-black uppercase text-emerald-500 tracking-widest italic">Confluences</h3>
                     <div id="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
                     <div class="flex gap-2">
-                        <input type="text" id="new-tag" placeholder="Add tag..." class="flex-grow p-2 rounded-lg text-[10px] bg-white/5 border border-white/10">
+                        <input type="text" id="new-tag" placeholder="Add tag..." class="flex-grow p-2 rounded-lg text-[10px] bg-white/5 border border-white/10 outline-none">
                         <button onclick="addTagToDock()" class="bg-blue-600 px-3 rounded-lg text-xs hover:bg-blue-500 transition-all">+</button>
                     </div>
-                    <div id="tag-dock" class="flex flex-wrap gap-2 pt-2 border-t border-white/5 internal-scroll max-h-[100px]"></div>
+                    <div id="tag-dock" class="flex flex-wrap gap-2 pt-2 border-t border-white/5 internal-scroll overflow-y-auto" style="max-height: 120px;"></div>
                 </div>
             </div>
             <button onclick="finalizeJournal()" class="w-full bg-blue-600 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-blue-500 transition-all">Submit Sovereign Record</button>
@@ -127,7 +128,7 @@
                 <div class="flex items-center gap-8">
                     <div class="relative w-20 h-20 flex items-center justify-center">
                         <svg class="w-full h-full transform -rotate-90"><circle cx="40" cy="40" r="34" stroke="currentColor" stroke-width="5" fill="transparent" class="text-white/5" /><circle id="progress-circle" cx="40" cy="40" r="34" stroke="currentColor" stroke-width="5" fill="transparent" stroke-dasharray="213.6" stroke-dashoffset="213.6" class="transition-all duration-500" /></svg>
-                        <span id="score-percent" class="absolute text-sm font-black">0%</span>
+                        <span id="score-percent" class="absolute text-sm font-black text-white">0%</span>
                     </div>
                     <div><p class="text-[9px] font-black text-slate-500 mb-1 uppercase tracking-widest italic">Sentinel Command</p><h2 id="verdict-text" class="text-3xl font-black italic uppercase leading-none">System Locked</h2></div>
                 </div>
@@ -153,7 +154,7 @@
                 </div>
             </div>
             <div class="w-full flex justify-end gap-6 mt-10 opacity-30 hover:opacity-100 transition-all">
-                <button onclick="exportCSV()" class="text-[9px] font-black uppercase text-emerald-500 tracking-widest">Export CSV</button>
+                <button onclick="exportCSV()" class="text-[9px] font-black uppercase text-emerald-500 tracking-widest">Export Month CSV</button>
                 <button onclick="wipeLogs()" class="text-[9px] font-black uppercase text-red-500 tracking-widest">Wipe All Records</button>
             </div>
         </div>
@@ -163,21 +164,21 @@
                 <div class="glass p-10 rounded-[3rem] space-y-10">
                     <div>
                         <h2 class="text-[10px] font-black uppercase text-blue-500 mb-6 italic tracking-[0.3em]">Goal Target</h2>
-                        <input type="number" id="target-input" onchange="cloudSave()" class="w-full p-5 rounded-2xl font-black text-3xl bg-white/5 text-white outline-none">
+                        <input type="number" id="target-input" onchange="cloudSave()" class="w-full p-5 rounded-2xl font-black text-3xl bg-white/5 outline-none text-white">
                     </div>
                     <div>
                         <h2 class="text-[10px] font-black uppercase text-slate-400 mb-6 italic tracking-widest">Deploy Account</h2>
                         <div class="grid grid-cols-2 gap-4 mb-4">
-                            <input type="number" id="acc-size" class="rounded-xl p-4 font-bold bg-white/5 border border-white/10 outline-none" value="50000">
-                            <select id="acc-group" class="rounded-xl p-4 font-bold text-xs bg-white/5 border border-white/10 outline-none"><option>Core</option><option>Satellite</option></select>
+                            <input type="number" id="acc-size" class="rounded-xl p-4 font-bold bg-white/5 border border-white/10 outline-none text-white" value="50000">
+                            <select id="acc-group" class="rounded-xl p-4 font-bold text-xs bg-white/5 border border-white/10 outline-none text-white"><option>Core</option><option>Satellite</option></select>
                         </div>
-                        <button onclick="addAccount()" class="w-full bg-blue-600 py-5 rounded-[2rem] font-black text-xs uppercase tracking-widest shadow-lg hover:bg-blue-500 transition-all">+ Deploy into Fleet</button>
+                        <button onclick="addAccount()" class="w-full bg-blue-600 py-5 rounded-[2rem] font-black text-xs uppercase tracking-widest shadow-lg hover:bg-blue-500 transition-all">+ Deploy</button>
                     </div>
                 </div>
                 <div class="glass p-10 rounded-[3rem]">
                     <div class="flex justify-between items-end mb-6">
                         <span id="total-val" class="text-5xl font-black tracking-tighter text-blue-400 leading-none">$0</span>
-                        <span id="target-display" class="text-xs font-mono text-slate-500 mb-1">/ $500k Target</span>
+                        <span id="target-display" class="text-xs font-mono text-slate-500 mb-1">/ $500,000 Target</span>
                     </div>
                     <div class="w-full bg-white/5 h-2.5 rounded-full overflow-hidden border border-white/10">
                         <div id="prog-bar" class="bg-blue-600 h-full transition-all duration-1000 shadow-[0_0_20px_rgba(59,130,246,0.3)]" style="width: 0%"></div>
@@ -193,29 +194,17 @@
         const _supabase = createClient('https://ouhdgqhhbegmnhtqcjiz.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91aGRncWhoYmVnbW5odHFjaml6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyNjEzNzEsImV4cCI6MjA4NjgzNzM3MX0.MUoKQ9VSjeiShcgRcw_D_ZnQgm4LlNFFGSoFJ1o2A7w');
         let currentUser = null, journal = [], fleet = [], target = 500000, activeId = null, eqChart = null, customTags = ["OB M15", "OTE 70%", "SSL/BSL", "MSS H1"];
 
-        // --- CORE SYNC ---
         async function cloudSave() {
             if(!currentUser) return;
             document.getElementById('sync-status').innerText = "Syncing...";
             document.getElementById('sync-status').className = "text-[7px] font-black uppercase text-amber-500 tracking-widest mt-1 animate-pulse";
-            
             const techLabels = Array.from(document.querySelectorAll('.tech-label')).map(i => i.value);
             const psychLabels = Array.from(document.querySelectorAll('.psych-label')).map(i => i.value);
             target = parseInt(document.getElementById('target-input').value) || 500000;
-            
-            const { error } = await _supabase.from('sentinel_data').upsert({ 
-                id: currentUser.id, fleet, journal, target, custom_tags: customTags, tech_labels: techLabels, psych_labels: psychLabels, updated_at: new Date() 
-            });
-
-            if(error) {
-                document.getElementById('sync-status').innerText = "Sync Error";
-                document.getElementById('sync-status').className = "text-[7px] font-black uppercase text-red-500 tracking-widest mt-1";
-                console.error(error);
-            } else {
-                document.getElementById('sync-status').innerText = "Cloud Live";
-                document.getElementById('sync-status').className = "text-[7px] font-black uppercase text-emerald-500 tracking-widest mt-1";
-                refreshUI();
-            }
+            await _supabase.from('sentinel_data').upsert({ id: currentUser.id, fleet, journal, target, custom_tags: customTags, tech_labels: techLabels, psych_labels: psychLabels, updated_at: new Date() });
+            document.getElementById('sync-status').innerText = "Cloud Live";
+            document.getElementById('sync-status').className = "text-[7px] font-black uppercase text-emerald-500 tracking-widest mt-1";
+            refreshUI();
         }
 
         async function cloudLoad() {
@@ -228,18 +217,13 @@
             }
         }
 
-        // --- AUTH ---
-        _supabase.auth.onAuthStateChange((event, session) => {
-            if (session) { currentUser = session.user; document.getElementById('auth-overlay').style.display='none'; document.getElementById('app-container').classList.remove('hidden'); cloudLoad(); }
-        });
-
+        _supabase.auth.onAuthStateChange((e, s) => { if (s) { currentUser = s.user; document.getElementById('auth-overlay').style.display='none'; document.getElementById('app-container').classList.remove('hidden'); cloudLoad(); } });
         async function handleAuth() {
             const e = document.getElementById('auth-email').value, p = document.getElementById('auth-pass').value;
             const { error } = await _supabase.auth.signInWithPassword({email:e, password:p});
             if (error) document.getElementById('auth-msg').innerText = error.message;
         }
 
-        // --- TAGS & DRAG ---
         function allowDrop(e) { e.preventDefault(); }
         function drag(e) { e.dataTransfer.setData("text", e.target.id); }
         function drop(e) {
@@ -250,57 +234,6 @@
         }
         async function addTagToDock() { const v = document.getElementById('new-tag').value; if(!v) return; customTags.push(v); await cloudSave(); document.getElementById('new-tag').value = ''; }
 
-        // --- UI REFRESH ---
-        function refreshUI() {
-            // Fleet
-            const fList = document.getElementById('fleet-list'); fList.innerHTML = ''; let tVal = 0;
-            fleet.forEach(acc => {
-                tVal += acc.size;
-                fList.innerHTML += `<div class="p-4 glass rounded-2xl flex justify-between text-xs border border-white/5 mb-2"><span><b>$${acc.size.toLocaleString()}</b> • ${acc.group}</span><button onclick="remAcc(${acc.id})" class="text-red-500/40 hover:text-red-500">×</button></div>`;
-            });
-            document.getElementById('total-val').innerText = `$${tVal.toLocaleString()}`;
-            document.getElementById('target-display').innerText = `/ $${target.toLocaleString()}`;
-            document.getElementById('prog-bar').style.width = Math.min(100, (tVal/target*100))+'%';
-            document.getElementById('target-input').value = target;
-
-            // Journal Feed
-            const feed = document.getElementById('journal-feed'); feed.innerHTML = '';
-            const sm = document.getElementById('archive-month').value;
-            journal.filter(j => j.date.startsWith(sm) || j.status === 'waiting').forEach(j => {
-                const wait = j.status === 'waiting'; const col = j.outcome === 'WIN' ? 'text-emerald-500' : wait ? 'text-amber-500' : 'text-red-500';
-                const planCol = j.plan === 'YES' ? 'text-emerald-500/80' : 'text-red-500/80';
-                feed.innerHTML += `<div class="p-4 glass rounded-2xl border border-white/10 cursor-pointer hover:bg-white/5 transition-all mb-2" onclick="openJournal(${j.id})">
-                    <div class="flex justify-between items-center mb-2"><span class="text-[9px] font-black uppercase ${planCol}">Plan: ${j.plan}</span><span class="text-[9px] font-black uppercase ${col}">${j.outcome} ${!wait ? `(${j.rr}RR)` : ''}</span></div>
-                    <div class="flex flex-wrap gap-1 mb-2">${(j.tags || []).map(t => `<span class="badge-tag">${t}</span>`).join('')}</div>
-                    <div class="text-[7px] text-slate-600 flex justify-between font-bold uppercase"><span>${j.date}</span><span>Audit: ${j.score}/9</span></div>
-                </div>`;
-            });
-            const dock = document.getElementById('tag-dock'); dock.innerHTML = '';
-            customTags.forEach((t, i) => { const tag = document.createElement('div'); tag.className = 'conf-tag'; tag.draggable = true; tag.innerText = t; tag.id = 't-'+i; tag.ondragstart = drag; tag.oncontextmenu = (e) => { e.preventDefault(); if(confirm("Delete?")) { customTags.splice(i,1); cloudSave(); } }; dock.appendChild(tag); });
-            updateChart();
-        }
-
-        // --- CHART & STATS ---
-        function updateChart() {
-            const sm = document.getElementById('archive-month').value;
-            const comp = journal.filter(j => j.status === 'complete' && j.date.startsWith(sm)).sort((a,b) => new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time));
-            const [y, m] = sm.split('-'); const start = new Date(y, m-1, 1); const end = new Date(y, m, 0);
-            const stTrr = document.getElementById('st-trr'), stPf = document.getElementById('st-pf'), stWr = document.getElementById('st-wr'), stAvg = document.getElementById('st-avg');
-            if(!comp.length) { stWr.innerText = "0%"; stTrr.innerText = "0.0"; stPf.innerText = "0.00"; stAvg.innerText = "0.0"; if(eqChart) eqChart.destroy(); return; }
-            let trr = 0, sw = 0, sl = 0, wins = 0; const data = [{ x: start, y: 0 }];
-            comp.forEach(j => { const imp = j.outcome === 'WIN' ? j.rr : -Math.abs(j.rr); trr += imp; if(j.outcome === 'WIN') { wins++; sw += j.rr; } else { sl += Math.abs(j.rr); } data.push({ x: new Date(j.date + ' ' + j.time), y: trr }); });
-            stWr.innerText = Math.round((wins/comp.length)*100) + '%';
-            stTrr.innerText = trr.toFixed(1); stPf.innerText = sl > 0 ? (sw/sl).toFixed(2) : sw.toFixed(2);
-            stAvg.innerText = (trr/comp.length).toFixed(1);
-            stTrr.className = trr >= 0 ? "text-2xl font-black text-emerald-500" : "text-2xl font-black text-red-500";
-            if(eqChart) eqChart.destroy();
-            eqChart = new Chart(document.getElementById('eqChart').getContext('2d'), {
-                type: 'line', data: { datasets: [{ data, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.05)', fill: true, tension: 0.15, pointRadius: 4 }] },
-                options: { responsive: true, maintainAspectRatio: false, scales: { x: { type: 'time', time: { unit: 'day' }, min: start, max: end, grid: { color: 'rgba(255,255,255,0.02)' }, ticks: { color: '#444' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#444' } } }, plugins: { legend: { display: false } } }
-            });
-        }
-
-        // --- ACTIONS ---
         function runAudit() {
             let s = document.querySelectorAll('.trade-check:checked').length;
             const p = s / 9; const circ = document.getElementById('progress-circle');
@@ -311,11 +244,14 @@
             txt.innerText = s === 9 ? "SACHA, EXECUTE" : s >= 8 ? "CAUTION: HALF RISK" : "SYSTEM LOCKED";
             circ.style.color = s === 9 ? "#00ff88" : s >= 8 ? "#ffcc00" : "#ff4d4d";
         }
+
         async function queueTrade() {
-            journal.unshift({ id: Date.now(), timestamp: new Date().toISOString(), date: new Date().toISOString().split('T')[0], time: new Date().toTimeString().split(' ')[0].substring(0,5), score: document.querySelectorAll('.trade-check:checked').length, outcome: 'PENDING', status: 'waiting', side: 'LONG', plan: 'YES', rr: 0, rrMax: 0, notes: '', tags: [], h1: '', m15: '', m1: '' });
+            const now = new Date();
+            journal.unshift({ id: Date.now(), timestamp: now.toISOString(), date: now.toISOString().split('T')[0], time: now.toTimeString().split(' ')[0].substring(0,5), score: document.querySelectorAll('.trade-check:checked').length, outcome: 'PENDING', status: 'waiting', side: 'LONG', plan: 'YES', rr: 0, rrMax: 0, notes: '', tags: [], h1: '', m15: '', m1: '' });
             document.querySelectorAll('.trade-check').forEach(c => c.checked = false); 
             await cloudSave(); runAudit();
         }
+
         function openJournal(id) { 
             activeId = id; const j = journal.find(x => x.id === id);
             document.getElementById('jou-date').value = j.date; document.getElementById('jou-time').value = j.time;
@@ -329,15 +265,51 @@
             document.getElementById('del-trade-btn').classList.remove('hidden');
             document.getElementById('journal-modal').style.display = 'flex'; 
         }
-        function closeJournal() { document.getElementById('journal-modal').style.display = 'none'; }
+
         async function finalizeJournal() {
             const i = journal.findIndex(j => j.id === activeId);
             journal[i] = { ...journal[i], date: document.getElementById('jou-date').value, time: document.getElementById('jou-time').value, side: document.getElementById('jou-dir').value, plan: document.getElementById('jou-plan').value, outcome: document.getElementById('jou-outcome').value, rr: parseFloat(document.getElementById('jou-rr').value) || 0, rrMax: parseFloat(document.getElementById('jou-rr-max').value) || 0, notes: document.getElementById('jou-notes').value, h1: document.getElementById('jou-h1').value, m15: document.getElementById('jou-m15').value, m1: document.getElementById('jou-m1').value, tags: Array.from(document.querySelectorAll('#drop-zone .conf-tag')).map(t => t.innerText), status: 'complete' };
             await cloudSave(); closeJournal();
         }
+
         async function deleteActiveTrade() { if(confirm("Delete trade?")) { journal = journal.filter(j => j.id !== activeId); await cloudSave(); closeJournal(); } }
         async function addAccount() { fleet.push({ id: Date.now(), size: parseInt(document.getElementById('acc-size').value), group: document.getElementById('acc-group').value }); await cloudSave(); }
         async function remAcc(id) { fleet = fleet.filter(a => a.id !== id); await cloudSave(); }
+
+        function refreshUI() {
+            const flList = document.getElementById('fleet-list'); flList.innerHTML = ''; let tVal = 0;
+            fleet.forEach(acc => { tVal += acc.size; flList.innerHTML += `<div class="p-4 glass rounded-2xl flex justify-between text-xs border border-white/5 mb-2"><span><b>$${acc.size.toLocaleString()}</b> • ${acc.group}</span><button onclick="remAcc(${acc.id})" class="text-red-500/40">×</button></div>`; });
+            document.getElementById('total-val').innerText = `$${tVal.toLocaleString()}`;
+            document.getElementById('target-display').innerText = `/ $${target.toLocaleString()} Target`;
+            document.getElementById('prog-bar').style.width = Math.min(100, (tVal/target*100))+'%';
+            
+            const feed = document.getElementById('journal-feed'); feed.innerHTML = '';
+            const sm = document.getElementById('archive-month').value;
+            journal.filter(j => j.date.startsWith(sm) || j.status === 'waiting').forEach(j => {
+                const wait = j.status === 'waiting'; const col = j.outcome === 'WIN' ? 'text-emerald-500' : wait ? 'text-amber-500' : 'text-red-500';
+                const planCol = j.plan === 'YES' ? 'text-emerald-500/80' : 'text-red-500/80';
+                feed.innerHTML += `<div class="p-4 glass rounded-2xl border border-white/10 cursor-pointer hover:bg-white/5 transition-all mb-2" onclick="openJournal(${j.id})"><div class="flex justify-between items-center mb-2"><span class="text-[9px] font-black uppercase ${planCol}">Plan: ${j.plan}</span><span class="text-[9px] font-black uppercase ${col}">${j.outcome} ${!wait ? `(${j.rr}RR)` : ''}</span></div><div class="flex flex-wrap gap-1 mb-2">${(j.tags || []).map(t => `<span class="badge-tag">${t}</span>`).join('')}</div><div class="text-[7px] text-slate-600 flex justify-between font-bold uppercase"><span>${j.date}</span><span>Audit: ${j.score}/9</span></div></div>`;
+            });
+            const dock = document.getElementById('tag-dock'); dock.innerHTML = '';
+            customTags.forEach((t, i) => { const tag = document.createElement('div'); tag.className = 'conf-tag'; tag.draggable = true; tag.innerText = t; tag.id = 't-'+i; tag.ondragstart = drag; tag.oncontextmenu = (e) => { e.preventDefault(); if(confirm("Delete tag?")) { customTags.splice(i,1); cloudSave(); } }; dock.appendChild(tag); });
+            updateChart();
+        }
+
+        function updateChart() {
+            const sm = document.getElementById('archive-month').value;
+            const comp = journal.filter(j => j.status === 'complete' && j.date.startsWith(sm)).sort((a,b) => new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time));
+            const [y, m] = sm.split('-'); const start = new Date(y, m-1, 1); const end = new Date(y, m, 0);
+            const stTrr = document.getElementById('st-trr'), stPf = document.getElementById('st-pf'), stWr = document.getElementById('st-wr'), stAvg = document.getElementById('st-avg');
+            if(!comp.length) { stWr.innerText = "0%"; stTrr.innerText = "0.0"; stPf.innerText = "0.00"; stAvg.innerText = "0.0"; stTrr.className = "text-2xl font-black text-white"; if(eqChart) eqChart.destroy(); return; }
+            let trr = 0, sw = 0, sl = 0, wins = 0; const data = [{ x: start, y: 0 }];
+            comp.forEach(j => { const imp = j.outcome === 'WIN' ? j.rr : -Math.abs(j.rr); trr += imp; if(j.outcome === 'WIN') { wins++; sw += j.rr; } else { sl += Math.abs(j.rr); } data.push({ x: new Date(j.date + ' ' + j.time), y: trr }); });
+            stWr.innerText = Math.round((wins/comp.length)*100) + '%';
+            stTrr.innerText = trr.toFixed(1); stPf.innerText = sl > 0 ? (sw/sl).toFixed(2) : sw.toFixed(2);
+            stAvg.innerText = (trr/comp.length).toFixed(1);
+            stTrr.className = trr >= 0 ? "text-2xl font-black text-emerald-500" : "text-2xl font-black text-red-500";
+            if(eqChart) eqChart.destroy();
+            eqChart = new Chart(document.getElementById('eqChart').getContext('2d'), { type: 'line', data: { datasets: [{ data, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.05)', fill: true, tension: 0.15, pointRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { type: 'time', time: { unit: 'day' }, min: start, max: end, grid: { color: 'rgba(255,255,255,0.02)' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' } } }, plugins: { legend: { display: false } } } });
+        }
 
         function populateMonths() {
             const select = document.getElementById('archive-month'); const now = new Date(); select.innerHTML = '';
@@ -350,6 +322,7 @@
         }
 
         function switchTab(t) { document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById('content-'+t).classList.add('active'); document.querySelectorAll('nav button').forEach(b => b.className = "text-[10px] font-black uppercase text-slate-500 pb-1"); document.getElementById('tab-'+t).className = "text-[10px] font-black uppercase active-tab pb-1 text-blue-500 border-b-2 border-blue-500"; if(t==='journal') refreshUI(); }
+        function closeJournal() { document.getElementById('journal-modal').style.display = 'none'; }
         function exportCSV() {
             const sm = document.getElementById('archive-month').value; const data = journal.filter(j => j.date.startsWith(sm));
             let csv = "Date,Time,Side,Plan,Outcome,RR,MaxRR,Score,H1,M15,M1,Notes,Tags\n";
@@ -359,7 +332,6 @@
         }
         function wipeLogs() { if(confirm("Wipe all data?")) { journal = []; cloudSave(); } }
         setInterval(() => { document.getElementById('clock').innerText = new Date().toTimeString().split(' ')[0]; }, 1000);
-        runAudit();
     </script>
 </body>
 </html>
